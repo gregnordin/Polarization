@@ -45,9 +45,9 @@
                     &Psi;&nbsp;</label>
             </td>
             <td>
-                <input type="range" id="idpsi" min="0" max="90" value="0"
+                <input type="range" id="idpsi" min="0" max="90" value="45"
                        step="1" oninput="psiSliderUpdate(value)">
-                <output for="idpsi" id="idpsiValue">0&deg;</output>
+                <output for="idpsi" id="idpsiValue">45&deg;</output>
             </td>
           </tr>
           <tr>
@@ -65,8 +65,10 @@
     </fieldset>
 </div>
 
-
 <p id="values" style="text-align:center"></p>
+
+<button id="idPrintValues" onclick="print_values()">Print Values</button>
+
 
 <script>
 
@@ -74,15 +76,47 @@
 // console.log( range(-1,1,0.05) );
 // console.log( range(-1,1,0.01) );
 
-timerRunning = false;
-
-deg_to_rad = Math.PI/180.;
-psi = Number(document.querySelector('#idpsiValue').value) * deg_to_rad;
-delta = Number(document.querySelector('#iddeltaValue').value) * deg_to_rad;
-
 //------------------------------------------------------------------------------
 // Main code
 //------------------------------------------------------------------------------
+
+timerRunning = false;
+
+var deg_to_rad = Math.PI/180.;
+var psi = Number(document.querySelector('#idpsi').value) * deg_to_rad;
+var delta = Number(document.querySelector('#iddelta').value) * deg_to_rad;
+
+console.log(document.querySelector('#idpsi').value);
+console.log(document.querySelector('#iddelta').value);
+console.log('deg_to_rad', deg_to_rad, psi, delta);
+
+t_norm = range(-1, 1, 0.125);
+x_coord = Array(t_norm.length);
+y_coord = Array(t_norm.length);
+calc_xy_coordinates();
+
+print_values();
+
+function calc_xy_coordinates() {
+    var cos_psi = Math.cos(psi);
+    var sin_psi = Math.sin(psi);
+    for (var i=0; i<t_norm.length; i++) {
+        x_coord[i] = cos_psi * Math.cos(2*Math.PI*t_norm[i]);
+        y_coord[i] = sin_psi * Math.cos(2*Math.PI*t_norm[i] + delta);
+    }
+}
+
+function print_values() {
+    console.log('------------------------------');
+    console.log('psi:', psi);
+    console.log('cos:', Math.cos(psi));
+    console.log('sin:', Math.sin(psi));
+    console.log('delta:', delta)
+    console.log(t_norm.length);
+    for (var i=0; i<t_norm.length; i++) {
+        console.log(i, t_norm[i], x_coord[i], y_coord[i]);
+    }
+}
 
 function psiSliderUpdate(value) {
     document.querySelector('#idpsiValue').innerHTML = value.toString() + "&deg;" ;
@@ -97,7 +131,7 @@ function deltaSliderUpdate(value) {
 }
 
 function update() {
-    var temp
+    calc_xy_coordinates();
 }
 
 </script>
