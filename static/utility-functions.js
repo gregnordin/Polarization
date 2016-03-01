@@ -12,6 +12,29 @@ function linspace(a,b,n) {
     return ret;
 }
 
+// Modified from http://stackoverflow.com/questions/8273047/javascript-function-similar-to-python-range
+// answer by Tadeck
+// Modification: adjust stop in for loop to be a little smaller/bigger so don't inadvertently
+// get stop as the last value in the returned array (for example, try console.log(range(-1,1,0.1)))
+function range(start, stop, step) {
+    if (typeof stop == 'undefined') {
+        // one param defined
+        stop = start;
+        start = 0;
+    }
+    if (typeof step == 'undefined') {
+        step = 1;
+    }
+    if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
+        return [];
+    }
+    var result = [];
+    for (var i = start; step > 0 ? i < stop-0.01*step : i > stop+0.01*step; i += step) {
+        result.push(i);
+    }
+    return result;
+};
+
 //------------------------------------------------------------------------------
 // Other
 //------------------------------------------------------------------------------

@@ -25,7 +25,7 @@
 <body>
 <div style="text-align:center" width:700px margin:auto>
     <h2>Plane Wave Polarization</h2>
-    <canvas id="canvas" width="500" height="500"></canvas>
+    <canvas id="canvas" width="400" height="400"></canvas>
     <div style="text-align:center">
         <button id="idTogButton" onclick="toggleButton()">Start</button>
         <button id="idResetButton" onclick="resetButton()">Reset</button>
@@ -46,8 +46,8 @@
             </td>
             <td>
                 <input type="range" id="idpsi" min="0" max="90" value="0"
-                       step="0.01" oninput="psiSliderUpdate(value)">
-                <output for="idpsi" id="idpsiValue">0</output>
+                       step="1" oninput="psiSliderUpdate(value)">
+                <output for="idpsi" id="idpsiValue">0&deg;</output>
             </td>
           </tr>
           <tr>
@@ -56,9 +56,9 @@
                     &delta;&nbsp;</label>
             </td>
             <td>
-                <input type="range" id="iddelta" min="-0.99" max="1"
-                    value="0" step="0.01" oninput="deltaSliderUpdate(value)">
-                <output for="iddelta" id="iddeltaValue">0&pi;</output>
+                <input type="range" id="iddelta" min="-179" max="180"
+                    value="0" step="1" oninput="deltaSliderUpdate(value)">
+                <output for="iddelta" id="iddeltaValue">0&deg;</output>
             </td>
           </tr>
         </table>
@@ -70,11 +70,35 @@
 
 <script>
 
+// console.log( range(-1,1,0.1) );
+// console.log( range(-1,1,0.05) );
+// console.log( range(-1,1,0.01) );
+
+timerRunning = false;
+
+deg_to_rad = Math.PI/180.;
+psi = Number(document.querySelector('#idpsiValue').value) * deg_to_rad;
+delta = Number(document.querySelector('#iddeltaValue').value) * deg_to_rad;
+
 //------------------------------------------------------------------------------
 // Main code
 //------------------------------------------------------------------------------
 
+function psiSliderUpdate(value) {
+    document.querySelector('#idpsiValue').innerHTML = value.toString() + "&deg;" ;
+    psi = Number(value) * deg_to_rad;
+    if (!timerRunning) update();
+}
 
+function deltaSliderUpdate(value) {
+    document.querySelector('#iddeltaValue').innerHTML = value.toString() + "&deg;";
+    delta = Number(value) * deg_to_rad;
+    if (!timerRunning) update();
+}
+
+function update() {
+    var temp
+}
 
 </script>
 
