@@ -67,20 +67,41 @@
 
 <p id="values" style="text-align:center"></p>
 
-<button id="idPrintValues" onclick="print_values()">Print Values</button>
+<button id="idPrintValues" onclick="print_values(true)">Print Values</button>
 
 
 <script>
-
-// console.log( range(-1,1,0.1) );
-// console.log( range(-1,1,0.05) );
-// console.log( range(-1,1,0.01) );
 
 //------------------------------------------------------------------------------
 // Main code
 //------------------------------------------------------------------------------
 
 timerRunning = false;
+
+// Set up canvas and the plot x,y coordinates relative to pixel coordinates
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+console.log('Canvas width and height:', canvas.width, canvas.height);
+var frac_left_margin = 0.1,
+    frac_right_margin = 0.1,
+    frac_top_margin = 0.1,
+    frac_bottom_margin = 0.1;
+var xmin = -1.1, xmax = 1.1;
+var ymin = -1.1, ymax = 1.1;
+console.log("Margins:")
+console.log("  left, right:", frac_left_margin, frac_right_margin);
+console.log("  top, bottom:", frac_top_margin, frac_bottom_margin);
+
+// Create Coordinates_with_margins object
+coord = new Coordinates_with_margins(canvas, xmin, xmax, ymin, ymax,
+            frac_left_margin, frac_right_margin, frac_top_margin, frac_bottom_margin);
+// printObject(coord);
+
+// Draw axes and label materials on canvas
+var t1 = elapsed_time(0, "");
+coord.drawAxes("x", "y");
+var t2 = elapsed_time(t1, "Draw canvas and axes");
+
 
 var deg_to_rad = Math.PI/180.;
 var psi = Number(document.querySelector('#idpsi').value) * deg_to_rad;
@@ -90,32 +111,53 @@ console.log(document.querySelector('#idpsi').value);
 console.log(document.querySelector('#iddelta').value);
 console.log('deg_to_rad', deg_to_rad, psi, delta);
 
-t_norm = range(-1, 1, 0.125);
-x_coord = Array(t_norm.length);
-y_coord = Array(t_norm.length);
+t_norm = range(-1, 1, 0.005);
+var pol = {x:Array(t_norm.length), data:Array(t_norm.length),
+          isVisible:true, strokeStyle:"rgba(0,0,255,1)"};
+
 calc_xy_coordinates();
 
-print_values();
+print_values(false);
+
+drawPolarization();
 
 function calc_xy_coordinates() {
     var cos_psi = Math.cos(psi);
     var sin_psi = Math.sin(psi);
     for (var i=0; i<t_norm.length; i++) {
-        x_coord[i] = cos_psi * Math.cos(2*Math.PI*t_norm[i]);
-        y_coord[i] = sin_psi * Math.cos(2*Math.PI*t_norm[i] + delta);
+        pol.x[i] = cos_psi * Math.cos(2*Math.PI*t_norm[i]);
+        pol.data[i] = sin_psi * Math.cos(2*Math.PI*t_norm[i] + delta);
     }
 }
 
-function print_values() {
+function print_values(printArray) {
     console.log('------------------------------');
+    console.log('Number of points:', t_norm.length);
     console.log('psi:', psi);
     console.log('cos:', Math.cos(psi));
     console.log('sin:', Math.sin(psi));
     console.log('delta:', delta)
-    console.log(t_norm.length);
-    for (var i=0; i<t_norm.length; i++) {
-        console.log(i, t_norm[i], x_coord[i], y_coord[i]);
+    if (printArray) {
+        for (var i=0; i<t_norm.length; i++) {
+            console.log(i, t_norm[i], pol.x[i], pol.data[i]);
+        }
     }
+}
+
+
+function update() {
+    calc_xy_coordinates();
+    drawAll();
+}
+
+function drawPolarization() {
+    drawLinePath(ctx, coord, pol);
+}
+
+function drawAll() {
+    coord.clearCanvas();
+    coord.drawAxes("x", "y");
+    drawPolarization();
 }
 
 function psiSliderUpdate(value) {
@@ -128,10 +170,6 @@ function deltaSliderUpdate(value) {
     document.querySelector('#iddeltaValue').innerHTML = value.toString() + "&deg;";
     delta = Number(value) * deg_to_rad;
     if (!timerRunning) update();
-}
-
-function update() {
-    calc_xy_coordinates();
 }
 
 </script>

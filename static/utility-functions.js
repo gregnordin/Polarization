@@ -86,7 +86,8 @@ function drawLinePath(ctx, cObj, dataObj) {
     }
     ctx.save();
     ctx.beginPath();
-    ctx.lineWidth = 2;
+    if (!("lineWidth" in dataObj)) ctx.lineWidth = 2;
+    else ctx.lineWidth = dataObj.lineWidth;
     ctx.strokeStyle = dataObj.strokeStyle;
     ctx.moveTo(cObj.x_to_px(dataObj.x[0]),cObj.y_to_px(dataObj.data[0]));
     for (var i=1;i<=dataObj.data.length;i++) {
