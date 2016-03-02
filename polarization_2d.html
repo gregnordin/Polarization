@@ -76,7 +76,11 @@
 // Main code
 //------------------------------------------------------------------------------
 
-timerRunning = false;
+// Initialize animation variables
+var timerRunning = false;
+var framecounter = 0;
+var n_samp_one_temporal_cycle = 90;
+var current_time = 0.0;
 
 // Set up canvas and the plot x,y coordinates relative to pixel coordinates
 var canvas = document.getElementById("canvas");
@@ -159,6 +163,16 @@ function drawAll() {
     coord.drawAxes("x", "y");
     drawPolarization();
 }
+
+function resetButton() {
+    framecounter = 0;
+    current_time = framecounter / n_samp_one_temporal_cycle;
+    document.querySelector('#idpsi').value = 45;
+    psiSliderUpdate(document.querySelector('#idpsi').value);
+    document.querySelector('#iddelta').value = 0;
+    deltaSliderUpdate(document.querySelector('#iddelta').value);
+    update();
+};
 
 function psiSliderUpdate(value) {
     document.querySelector('#idpsiValue').innerHTML = value.toString() + "&deg;" ;
