@@ -118,6 +118,23 @@ print_values(false);
 // Draw initial polarization state
 update();
 
+// Start animation loop
+redrawAll();
+
+//------------------------------------------------------------------------------
+// Animation related
+//------------------------------------------------------------------------------
+
+function redrawAll() {
+    if (timerRunning) {
+        var t0 = elapsed_time(0, "");
+        framecounter++;
+        current_time = framecounter % t_norm.length ;
+        update();
+        // if (framecounter < 21) elapsed_time(t0, ("framecounter: " + framecounter));
+    };
+    requestAnimationFrame(redrawAll);
+}
 
 //------------------------------------------------------------------------------
 // Calculations
@@ -156,6 +173,19 @@ function update() {
     drawAll();
 }
 
+function drawAll() {
+    coord.clearCanvas();
+    coord.drawAxes("x", "y");
+    drawPolarization();
+    drawCircularArrows();
+    if (timerRunning) {
+        drawArrow(ctx, coord.x_to_px(0), coord.y_to_px(0),
+                  coord.x_to_px(pol.x[current_time]),
+                  coord.y_to_px(pol.data[current_time]),
+                  2, 10, "rgba(255,0,0,0.5)")
+    }
+}
+
 function drawPolarization() {
     drawLinePath(ctx, coord, pol);
 }
@@ -179,16 +209,19 @@ function drawCircularArrows() {
     }
 }
 
-function drawAll() {
-    coord.clearCanvas();
-    coord.drawAxes("x", "y");
-    drawPolarization();
-    drawCircularArrows();
-}
-
 //------------------------------------------------------------------------------
 // Callbacks
 //------------------------------------------------------------------------------
+
+function toggleButton() {
+    if (timerRunning) {
+        timerRunning = false;
+        document.getElementById("idTogButton").innerHTML = "Start";
+    } else {
+        timerRunning = true;
+        document.getElementById("idTogButton").innerHTML = "Stop";
+    };
+}
 
 function resetButton() {
     framecounter = 0;
