@@ -125,6 +125,7 @@ print_values(false);
 
 drawPolarization();
 
+
 function calc_xy_coordinates() {
     var cos_psi = Math.cos(psi);
     var sin_psi = Math.sin(psi);
@@ -162,6 +163,17 @@ function drawAll() {
     coord.clearCanvas();
     coord.drawAxes("x", "y");
     drawPolarization();
+    ctx.fillStyle = "black";
+    ctx.font = "15px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    if (delta < 179.0001*deg_to_rad && delta > (1-0.0001)*deg_to_rad) {
+        circular_arrow(ctx, coord.x_to_px(0.9), coord.y_to_px(-0.9), 15, 5, "grey", "cw");
+        ctx.fillText("cw", coord.x_to_px(0.9)-25, coord.y_to_px(-0.9));
+    } else if (delta > (-179-0.0001)*deg_to_rad && delta < (-1+0.0001)*deg_to_rad) {
+        circular_arrow(ctx, coord.x_to_px(0.9)-20, coord.y_to_px(-0.9), 15, 5, "grey", "ccw");
+        ctx.fillText("ccw", coord.x_to_px(0.9)+5, coord.y_to_px(-0.9));
+    }
 }
 
 function resetButton() {

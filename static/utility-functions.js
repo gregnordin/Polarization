@@ -144,3 +144,21 @@ function drawArrow(ctx, fromx, fromy, tox, toy, linewidth, headlength, color){
 	ctx.fill();
     ctx.restore();
 }
+
+function circular_arrow(ctx, x, y, radius, straightlength, color, rotationdirection) {
+    ctx.save();
+    ctx.strokeStyle=color;
+    var ts = 15; // horizontal shift of label text in pixels
+    ctx.beginPath();
+    if (rotationdirection == "cw") {
+        var s = -1, counterClockwise = false;
+    } else {
+        var s = 1, counterClockwise = true;
+    }
+    ctx.moveTo(x + s*radius + s*straightlength,y-radius);
+    ctx.lineTo(x + s*radius,y-radius);
+    ctx.arc(x + s*radius, y, radius, -Math.PI/2, Math.PI/2, counterClockwise);
+    ctx.stroke();
+    drawArrow(ctx, x + s*radius,y+radius,x + s*radius + s*straightlength,y+radius, 1, 10, color);
+    ctx.restore();
+}
