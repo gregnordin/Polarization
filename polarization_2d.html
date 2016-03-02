@@ -101,30 +101,27 @@ coord = new Coordinates_with_margins(canvas, xmin, xmax, ymin, ymax,
             frac_left_margin, frac_right_margin, frac_top_margin, frac_bottom_margin);
 // printObject(coord);
 
-// Draw axes and label materials on canvas
+// Draw axes and labels on canvas
 var t1 = elapsed_time(0, "");
 coord.drawAxes("x", "y");
 var t2 = elapsed_time(t1, "Draw canvas and axes");
 
-
+// Data initializations
 var deg_to_rad = Math.PI/180.;
 var psi = Number(document.querySelector('#idpsi').value) * deg_to_rad;
 var delta = Number(document.querySelector('#iddelta').value) * deg_to_rad;
-
-console.log(document.querySelector('#idpsi').value);
-console.log(document.querySelector('#iddelta').value);
-console.log('deg_to_rad', deg_to_rad, psi, delta);
-
 t_norm = range(-1, 1, 0.005);
 var pol = {x:Array(t_norm.length), data:Array(t_norm.length),
           isVisible:true, strokeStyle:"rgba(0,0,255,1)"};
-
-calc_xy_coordinates();
-
 print_values(false);
 
-drawPolarization();
+// Draw initial polarization state
+update();
 
+
+//------------------------------------------------------------------------------
+// Calculations
+//------------------------------------------------------------------------------
 
 function calc_xy_coordinates() {
     var cos_psi = Math.cos(psi);
@@ -150,6 +147,10 @@ function print_values(printArray) {
 }
 
 
+//------------------------------------------------------------------------------
+// Canvas drawing
+//------------------------------------------------------------------------------
+
 function update() {
     calc_xy_coordinates();
     drawAll();
@@ -159,22 +160,35 @@ function drawPolarization() {
     drawLinePath(ctx, coord, pol);
 }
 
+function drawCircularArrows() {
+    var tolerance = 0.0001;
+    if (psi > tolerance*deg_to_rad && psi < (89-tolerance)*deg_to_rad) {
+        ctx.save();
+        ctx.fillStyle = "black";
+        ctx.font = "15px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        if (delta < (179+tolerance)*deg_to_rad && delta > (1-tolerance)*deg_to_rad) {
+            circular_arrow(ctx, coord.x_to_px(0.9), coord.y_to_px(-0.9), 15, 5, "grey", "cw");
+            ctx.fillText("cw", coord.x_to_px(0.9)-25, coord.y_to_px(-0.9));
+        } else if (delta > (-179-tolerance)*deg_to_rad && delta < (-1+tolerance)*deg_to_rad) {
+            circular_arrow(ctx, coord.x_to_px(0.9)-20, coord.y_to_px(-0.9), 15, 5, "grey", "ccw");
+            ctx.fillText("ccw", coord.x_to_px(0.9)+5, coord.y_to_px(-0.9));
+        }
+        ctx.restore();
+    }
+}
+
 function drawAll() {
     coord.clearCanvas();
     coord.drawAxes("x", "y");
     drawPolarization();
-    ctx.fillStyle = "black";
-    ctx.font = "15px Arial";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    if (delta < 179.0001*deg_to_rad && delta > (1-0.0001)*deg_to_rad) {
-        circular_arrow(ctx, coord.x_to_px(0.9), coord.y_to_px(-0.9), 15, 5, "grey", "cw");
-        ctx.fillText("cw", coord.x_to_px(0.9)-25, coord.y_to_px(-0.9));
-    } else if (delta > (-179-0.0001)*deg_to_rad && delta < (-1+0.0001)*deg_to_rad) {
-        circular_arrow(ctx, coord.x_to_px(0.9)-20, coord.y_to_px(-0.9), 15, 5, "grey", "ccw");
-        ctx.fillText("ccw", coord.x_to_px(0.9)+5, coord.y_to_px(-0.9));
-    }
+    drawCircularArrows();
 }
+
+//------------------------------------------------------------------------------
+// Callbacks
+//------------------------------------------------------------------------------
 
 function resetButton() {
     framecounter = 0;
