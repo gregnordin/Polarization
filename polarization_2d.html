@@ -20,21 +20,52 @@
       src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
     </script>
 
+    <style>
+    body {
+        width:600px;
+        margin-left:auto;
+        margin-right:auto;
+    }
+
+    </style>
+
 </head>
 
 <body>
-<div style="text-align:center" width:700px margin:auto>
+<div style="text-align:center" width:600px margin:auto>
     <h2>Plane Wave Polarization</h2>
+
+    <div style="text-align:left">
+    The electric field phasor of a plane wave propagating in the $+z$ direction is
+
+    \begin{aligned} \vec{E} &= \left(\hat{x}E_{x0}\mathrm{e}^{j\delta_x} +  \hat{y}E_{y0}\mathrm{e}^{j\delta_y}\right)\mathrm{e}^{-jkz}\\
+                      &= E_{x0}\mathrm{e}^{j\delta_x}\left(\hat{x} +  \hat{y}\frac{E_{y0}}{E_{x0}}\mathrm{e}^{j(\delta_y-\delta_x)}\right)\mathrm{e}^{-jkz}\\
+                      &= E_{x0}\mathrm{e}^{j\delta_x}\left(\hat{x} +  \hat{y}\tan\psi\,\mathrm{e}^{j\delta}\right)\mathrm{e}^{-jkz},\\
+    \end{aligned}
+
+    where $E_{x0}$ and $E_{y0}$ are real, $\tan\psi = \frac{E_{y0}}{E_{x0}}$, and
+    $\delta = \delta_y-\delta_x$ is the phase of the y-component relative to the
+    x-component. The real electric field is
+
+    \begin{aligned} \vec{\mathcal{E}}(z,t) &= \Re(\vec{E}\, \mathrm{e}^{j\omega t}) \\
+                      &= \hat{x}E_{x0}\cos(\omega t - kz + \delta_x) + \hat{y}E_{x0}\tan\psi\cos(\omega t - kz + \delta_x + \delta).\\
+    \end{aligned}
+
+    For ease of visualization, let's consider the electric field in the $z=0$
+    plane with $\delta_x = 0$, in which case the real electric field is
+
+    \begin{aligned} \vec{\mathcal{E}}(z,t) &= \hat{x}E_{x0}\cos(\omega t) +
+                    \hat{y}E_{x0}\tan\psi\cos(\omega t + \delta)\\
+    \end{aligned}
+
+    <br />
+    </div>
+
     <canvas id="canvas" width="400" height="400"></canvas>
     <div style="text-align:center">
         <button id="idTogButton" onclick="toggleButton()">Start</button>
         <button id="idResetButton" onclick="resetButton()">Reset</button>
     </div>
-    <p>TE: &nbsp;&nbsp; $r_s = \frac{n_1 - n_2}{n_1 + n_2}$,
-           &nbsp;&nbsp; $t_s = \frac{2 n_1}{n_1 + n_2} = 1 + r_s$ </p>
-    <p>TM: &nbsp;&nbsp; $r_p = \frac{n_2 - n_1}{n_2 + n_1}$,
-           &nbsp;&nbsp; $t_p = \frac{2 n_1}{n_1 + n_2} = 1 - r_p$ </p>
-    <br />
 
     <fieldset>
         <legend>Parameter controls</legend>
@@ -46,7 +77,8 @@
             </td>
             <td>
                 <input type="range" id="idpsi" min="0" max="90" value="45"
-                       step="1" oninput="psiSliderUpdate(value)">
+                       step="1" oninput="psiSliderUpdate(value)"
+                       style="width: 250px;">
                 <output for="idpsi" id="idpsiValue">45&deg;</output>
             </td>
           </tr>
@@ -57,17 +89,18 @@
             </td>
             <td>
                 <input type="range" id="iddelta" min="-179" max="180"
-                    value="0" step="1" oninput="deltaSliderUpdate(value)">
+                    value="0" step="1" oninput="deltaSliderUpdate(value)"
+                    style="width: 250px;">
                 <output for="iddelta" id="iddeltaValue">0&deg;</output>
             </td>
           </tr>
         </table>
     </fieldset>
+
+    <p id="values" style="text-align:center"></p>
 </div>
 
-<p id="values" style="text-align:center"></p>
-
-<button id="idPrintValues" onclick="print_values(true)">Print Values</button>
+<!-- <button id="idPrintValues" onclick="print_values(true)">Print Values</button> -->
 
 
 <script>
