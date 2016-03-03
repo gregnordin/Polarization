@@ -46,10 +46,17 @@
     where
 
     \begin{aligned}
-        E_{x0}, E_{y0} &= \text{ amplitude of the x- and y-components (real quantities)} \\
+        E_{x0}, E_{y0} &= \text{ amplitude of the x- and y-components (positive real quantities)} \\
         \delta_x, \delta_y &= \text{ phase of the x- and y-components} \\
         \tan\psi &= \frac{E_{y0}}{E_{x0}} \text{ (ratio of the amplitude of the y-component to the x-component)} \\
-        \delta &= \delta_y-\delta_x \text{ (phase of the y-component relative to the x-component)}.
+        \delta &= \delta_y-\delta_x \text{ (phase of the y-component relative to the x-component)}
+    \end{aligned}
+
+    with
+
+    \begin{aligned}
+        0 \le \psi \le \pi \\
+        -\pi \lt \delta \le \pi.
     \end{aligned}
 
     The angle, $\psi$, can be understood graphically as
@@ -124,6 +131,14 @@
         </table>
     </fieldset>
 
+    <div style="text-align:left">
+        <h4>Special Cases</h4>
+
+        <ul>
+            <li> Linear Polarization: $\psi = 0^{\circ} \text{ or } 90^{\circ}$, <strong>OR</strong> $\delta = 0^{\circ} \text{ or } 180^{\circ}$ </li>
+            <li> Circular Polarization: $\psi = 45^{\circ}$ <strong>AND</strong> $\delta = \pm90^{\circ}$</li>
+        </ul>
+    </div>
     <p id="values" style="text-align:center"></p>
 </div>
 
