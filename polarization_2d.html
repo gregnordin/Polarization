@@ -28,7 +28,6 @@
     }
 
     </style>
-
 </head>
 
 <body>
@@ -65,22 +64,21 @@
        <img src = "static/images/definition_of_psi_using_latex/definition_of_psi.png"
        width="208" height="137" /></p>
 
-    where the amplitude of the phasor (and therefore the electric field) is $E_0 = |\vec{E}| = \sqrt{E_{x0}^2 + E_{y0}^2}$ such that
+    where the amplitude of the phasor (and therefore the electric field) is $E_0 = |\vec{E}| = \sqrt{E_{x0}^2 + E_{y0}^2}$. Note that
 
     \begin{aligned}
         E_{x0} &= E_0 \cos{\psi} \\
         E_{y0} &= E_0 \sin{\psi}. \\
     \end{aligned}
 
-
     The real electric field is
 
-    \begin{aligned} \vec{\mathcal{E}}(z,t) &= \Re(\vec{E}\, \mathrm{e}^{j\omega t}) \\
+    \begin{aligned} \vec{\mathcal{E}}(z,t) &= \operatorname{Re}(\vec{E}\, \mathrm{e}^{j\omega t}) \\
                       &= \hat{x}E_{x0}\cos(\omega t - kz + \delta_x) + \hat{y}E_{x0}\tan\psi\cos(\omega t - kz + \delta_x + \delta)\\
-                      &= E_{0}\left[\hat{x}\cos{\psi}\cos(\omega t - kz + \delta_x) + \hat{y}\sin{\psi}\cos(\omega t - kz + \delta_x + \delta)\right].\\
+                      &= E_{0}\left[\hat{x}\cos{\psi}\cos(\omega t - kz + \delta_x) + \hat{y}\sin{\psi}\cos(\omega t - kz + \delta_x + \delta)\right], \\
     \end{aligned}
 
-    For ease of visualization, consider the electric field in the $z=0$
+    where $\operatorname{Re}()$ means take the real part. For ease of visualization, consider the electric field in the $z=0$
     plane with $\delta_x = 0$, in which case the real electric field is
 
     \begin{aligned} \vec{\mathcal{E}}(z,t) &= E_{0}\left[\hat{x}\cos{\psi}\cos(\omega t) +
