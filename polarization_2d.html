@@ -77,7 +77,7 @@
        width="222" height="138" /></p>
 
     where the amplitude of the phasor (and therefore the real electric field) is
-    $E_0 = |\vec{E}| = \sqrt{|E_{x0}|^2 + |E_{y0}|^2}$. Note from the figure that
+    $E_0 = |\vec{E}| = \sqrt{|E_{x0}|^2 + |E_{y0}|^2}$. Note from the figure  that
 
     \begin{aligned}
         |E_{x0}| &= E_0 \cos{\psi} \\
@@ -330,6 +330,18 @@ function deltaSliderUpdate(value) {
     delta = Number(value) * deg_to_rad;
     if (!timerRunning) update();
 }
+
+</script>
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','http://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58164226-2', 'auto');
+  ga('send', 'pageview');
 
 </script>
 
