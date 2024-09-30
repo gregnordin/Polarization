@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Animated Line Visualization with Extended Phase Range</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+
+        .slider {
+            width: 200px;
+            margin: 0 10px;
+        }
+
+        label,
+        .value {
+            color: white;
+            font-family: Arial, sans-serif;
+            width: 80px;
+        }
+
+        .value {
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="controls">
+        <div class="slider-container">
+            <label for="psi-slider">&Psi;:</label>
+            <input type="range" id="psi-slider" class="slider" min="0" max="90" value="90" step="1">
+            <span id="psi-value" class="value">90°</span>
+        </div>
+        <div class="slider-container">
+            <label for="phase-slider">&delta;:</label>
+            <input type="range" id="phase-slider" class="slider" min="-180" max="180" value="0" step="1">
+            <span id="phase-value" class="value">0°</span>
+        </div>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // Scene setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // OrbitControls for user interaction
+        const controls = new OrbitControls(camera, renderer.domElement);
+
+        // Line parameters
+        const numPoints = 1000;
+        const T = 5; // Time period
+        const wavelength = 10;
+        let phase = 0; // Initial phase (will be updated by slider)
+        let psi = Math.PI / 2; // Initial psi (90 degrees)
+        const lineLength = wavelength * 2; // Total length of the line in z direction
+        const amplification = 5; // Amplification factor for x and y components
+        const tubeRadius = 0.1; // Increased tube radius for thicker line
+
+        // Custom Axes Helper
+        function createCustomAxes(length) {
+            const axes = new THREE.Object3D();
+
+            // X-axis (red)
+            axes.add(new THREE.Line(
+                new THREE.BufferGeometry().setFromPoints([
+                    new THREE.Vector3(0, 0, 0),
+                    new THREE.Vector3(length, 0, 0)
+                ]),
+                new THREE.LineBasicMaterial({ color: 0xff0000 })
+            ));
+
+            // Y-axis (green)
+            axes.add(new THREE.Line(
+                new THREE.BufferGeometry().setFromPoints([
+                    new THREE.Vector3(0, 0, 0),
+                    new THREE.Vector3(0, length, 0)
+                ]),
+                new THREE.LineBasicMaterial({ color: 0x00ff00 })
+            ));
+
+            // Z-axis (light cyan)
+            axes.add(new THREE.Line(
+                new THREE.BufferGeometry().setFromPoints([
+                    new THREE.Vector3(0, 0, 0),
+                    new THREE.Vector3(0, 0, lineLength)
+                ]),
+                new THREE.LineBasicMaterial({ color: 0x00ffff })
+            ));
+
+            return axes;
+        }
+
+        // Add custom axes
+        const customAxes = createCustomAxes(5);
+        scene.add(customAxes);
+
+        // Create initial curve points
+        function createInitialCurvePoints() {
+            const points = [];
+            for (let i = 0; i <= numPoints; i++) {
+                const z = (i / numPoints) * lineLength;
+                points.push(new THREE.Vector3(0, 0, z));
+            }
+            return points;
+        }
+
+        // Create thick line using TubeGeometry
+        const curve = new THREE.CatmullRomCurve3(createInitialCurvePoints());
+        const tubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff });
+        const tubeGeometry = new THREE.TubeGeometry(curve, numPoints, tubeRadius, 8, false);
+        const tubeMesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
+        scene.add(tubeMesh);
+
+        // Create end line
+        const endLineGeometry = new THREE.BufferGeometry();
+        const endLinePositions = new Float32Array(6); // 2 points * 3 coordinates
+        endLineGeometry.setAttribute('position', new THREE.BufferAttribute(endLinePositions, 3));
+        const endLineMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 });
+        const endLine = new THREE.Line(endLineGeometry, endLineMaterial);
+        scene.add(endLine);
+
+        // Create vertical lines
+        const numVerticalLines = 20;
+        const verticalLines = [];
+        const verticalLineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+
+        for (let i = 0; i < numVerticalLines; i++) {
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(6); // 2 points * 3 coordinates
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const line = new THREE.Line(geometry, verticalLineMaterial);
+            verticalLines.push(line);
+            scene.add(line);
+        }
+
+        // Set camera position
+        camera.position.set(10, 10, 30);
+        controls.update();
+
+        // Animation function
+        function animate(time) {
+            const t = (time / 1000) % T;
+
+            for (let i = 0; i <= numPoints; i++) {
+                const z = (i / numPoints) * lineLength;
+                const x = amplification * Math.cos(psi) * Math.cos(2 * Math.PI * t / T - (2 * Math.PI / wavelength) * z);
+                const y = amplification * Math.sin(psi) * Math.cos(2 * Math.PI * t / T - (2 * Math.PI / wavelength) * z + phase);
+                curve.points[i].set(x, y, z);
+            }
+
+            curve.updateArcLengths();
+            tubeMesh.geometry.dispose();
+            tubeMesh.geometry = new THREE.TubeGeometry(curve, numPoints, tubeRadius, 8, false);
+
+            // Update end line
+            const lastPoint = curve.points[curve.points.length - 1];
+            endLinePositions[0] = 0;
+            endLinePositions[1] = 0;
+            endLinePositions[2] = lineLength;
+            endLinePositions[3] = lastPoint.x;
+            endLinePositions[4] = lastPoint.y;
+            endLinePositions[5] = lastPoint.z;
+            endLine.geometry.attributes.position.needsUpdate = true;
+
+            // Update vertical lines
+            const velocity = wavelength / T;
+            for (let i = 0; i < numVerticalLines; i++) {
+                const positions = verticalLines[i].geometry.attributes.position.array;
+                let z = (velocity * t + i * lineLength / numVerticalLines) % lineLength;
+                const x = amplification * Math.cos(psi) * Math.cos(2 * Math.PI * t / T - (2 * Math.PI / wavelength) * z);
+                const y = amplification * Math.sin(psi) * Math.cos(2 * Math.PI * t / T - (2 * Math.PI / wavelength) * z + phase);
+
+                positions[0] = 0;
+                positions[1] = 0;
+                positions[2] = z;
+                positions[3] = x;
+                positions[4] = y;
+                positions[5] = z;
+                verticalLines[i].geometry.attributes.position.needsUpdate = true;
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+
+        animate(0);
+
+        // Handle window resize
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        window.addEventListener('resize', onWindowResize);
+
+        // Phase slider control
+        const phaseSlider = document.getElementById('phase-slider');
+        const phaseValue = document.getElementById('phase-value');
+
+        phaseSlider.addEventListener('input', function () {
+            const degrees = parseInt(this.value);
+            phase = (degrees * Math.PI) / 180; // Convert degrees to radians
+            phaseValue.textContent = `${degrees}°`;
+        });
+
+        // Psi slider control
+        const psiSlider = document.getElementById('psi-slider');
+        const psiValue = document.getElementById('psi-value');
+
+        psiSlider.addEventListener('input', function () {
+            const degrees = parseInt(this.value);
+            psi = (degrees * Math.PI) / 180; // Convert degrees to radians
+            psiValue.textContent = `${degrees}°`;
+        });
+    </script>
+</body>
+
+</html>
